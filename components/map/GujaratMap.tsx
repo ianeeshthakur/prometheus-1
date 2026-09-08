@@ -31,8 +31,8 @@ export function GujaratMap({
     if (typeof window === 'undefined' || !mapRef.current || leafletMapRef.current) return;
 
     import('leaflet').then((L) => {
-      // Prevent double init in strict mode
-      if (leafletMapRef.current || (mapRef.current as any)._leaflet_id) return;
+      // Prevent double init or null ref if component unmounted while importing
+      if (!mapRef.current || leafletMapRef.current || (mapRef.current as any)._leaflet_id) return;
 
       // Fix default icon
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
