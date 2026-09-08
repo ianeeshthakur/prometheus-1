@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertTriangle, X, Navigation, MapPin, Search, Shield, ChevronDown, CheckCircle, Clock, Video } from 'lucide-react';
+import { AlertTriangle, Navigation, Search, Shield, Video } from 'lucide-react';
 import { ALERTS } from '@/lib/mock-data';
 import { Alert } from '@/lib/types';
 import { IncidentDetailsModal, CreateCaseDialog } from './IncidentModals';
@@ -23,7 +23,7 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
     if (ALERTS[0]) {
       onAlertClick(ALERTS[0].alertId);
     }
-  }, []);
+  }, [onAlertClick]);
 
   const handleSelect = (alert: Alert) => {
     setActiveAlertId(alert.alertId);
