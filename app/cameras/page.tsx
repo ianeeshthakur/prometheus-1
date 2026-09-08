@@ -61,13 +61,13 @@ function CameraFeedCard({ cam, index, isLive }: { cam: any; index: number; isLiv
   ].flat();
 
   return (
-    <div className={`glass-panel overflow-hidden transition-all duration-300 ${expanded ? 'fixed inset-4 z-50 flex flex-col bg-black/95 backdrop-blur-xl border border-white/20' : 'relative group'}`}>
-      {expanded && <div className="absolute inset-0 bg-black/60 z-0" onClick={() => setExpanded(false)} />}
+    <div className={`flex flex-col bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden shadow-sm hover:shadow-[var(--shadow-elevated)] transition-all duration-300 ${expanded ? 'fixed inset-4 z-50 bg-[var(--bg-panel)] shadow-2xl' : 'relative group'}`}>
+      {expanded && <div className="absolute inset-0 bg-black/60 z-[-1]" onClick={() => setExpanded(false)} />}
       
       {/* Video Area */}
       <div 
-        className={`${expanded ? 'flex-1 relative z-10' : 'h-40 relative'}`}
-        style={{ background: isLive ? '#000' : bgPatterns[index % bgPatterns.length] }}
+        className={`${expanded ? 'flex-1 relative z-10' : 'h-48 relative'}`}
+        style={{ background: '#000' }}
       >
         {isLive && streamStatus ? (
           <LiveCameraPlayer cameraId={cam.id} status={streamStatus.status} />
@@ -75,23 +75,21 @@ function CameraFeedCard({ cam, index, isLive }: { cam: any; index: number; isLiv
           /* Simulated camera effects for DEMO mode */
           <>
             <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]" />
-            <div className="absolute inset-0 scanline opacity-20 pointer-events-none" />
           </>
         )}
 
-        {/* Overlays (Only show mock detections if not LIVE, or if LIVE we could fetch real ones) */}
+        {/* Overlays (Clean bounding boxes only) */}
         {!isLive && cam.status === 'ONLINE' && detections.map(det => (
           <div
             key={det.id}
-            className="absolute border border-dashed"
+            className="absolute border"
             style={{
               left: det.x, top: det.y, width: det.w, height: det.h,
               borderColor: det.type === 'vehicle' ? 'var(--accent-cyan)' : det.type === 'plate' ? 'var(--status-warning)' : '#10b981',
-              backgroundColor: det.type === 'vehicle' ? 'rgba(14,165,233,0.1)' : det.type === 'plate' ? 'rgba(245,158,11,0.1)' : 'rgba(16,185,129,0.1)',
-              boxShadow: '0 0 10px rgba(0,0,0,0.5) inset'
+              backgroundColor: 'transparent',
             }}
           >
-            <div className="absolute -top-4 left-[-1px] px-1 text-[8px] font-bold text-black" style={{ backgroundColor: det.type === 'vehicle' ? 'var(--accent-cyan)' : det.type === 'plate' ? 'var(--status-warning)' : '#10b981' }}>
+            <div className="absolute -top-5 left-[-1px] px-1 text-[9px] font-bold text-white tracking-wider" style={{ backgroundColor: det.type === 'vehicle' ? 'var(--accent-cyan)' : det.type === 'plate' ? 'var(--status-warning)' : '#10b981' }}>
               {det.label}
             </div>
           </div>
@@ -105,64 +103,61 @@ function CameraFeedCard({ cam, index, isLive }: { cam: any; index: number; isLiv
         )}
 
         {/* Live Status Overlay */}
-        <div className="absolute top-2 left-2 flex items-center gap-2 z-20">
+        <div className="absolute top-3 left-3 flex items-center gap-2 z-20">
           {isLive && streamStatus ? (
             <StreamHealthBadge status={streamStatus.status} fps={streamStatus.fps} latencyMs={streamStatus.latency_ms} />
           ) : (
-            <div className="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-black/40 backdrop-blur-sm border border-white/10">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/50 backdrop-blur-md border border-white/10">
               {cam.status === 'ONLINE' ? (
                 <>
                   <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--status-online)', letterSpacing: '0.05em' }}>LIVE</span>
+                  <span className="text-[10px] font-bold text-green-400 tracking-wide">LIVE</span>
                 </>
               ) : (
                 <>
                   <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                  <span style={{ fontSize: 9, fontWeight: 700, color: 'var(--status-offline)', letterSpacing: '0.05em' }}>OFFLINE</span>
+                  <span className="text-[10px] font-bold text-red-400 tracking-wide">OFFLINE</span>
                 </>
               )}
+            </div>
+          )}
+          {cam.status === 'ONLINE' && (
+            <div className="px-2 py-1 rounded-md bg-black/50 backdrop-blur-md border border-white/10">
+               <span className="text-[10px] font-bold text-[var(--accent-cyan)] tracking-wide">AI ACTIVE</span>
             </div>
           )}
         </div>
 
         <button 
-          className="absolute top-2 right-2 p-1.5 rounded bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-colors z-20"
+          className="absolute top-3 right-3 p-1.5 rounded bg-black/50 text-white hover:text-[var(--accent-cyan)] hover:bg-black/70 transition-colors z-20 backdrop-blur-md"
           onClick={(e) => {
             e.stopPropagation();
             setExpanded(!expanded);
           }}
         >
-          <Maximize2 size={12} />
+          <Maximize2 size={14} />
         </button>
       </div>
 
-      {/* Camera metadata */}
-      <div className={`${expanded ? 'p-6 relative z-10 bg-black/90' : 'p-2.5'}`}>
-        <div className="flex items-start justify-between gap-2 mb-1.5">
-          <div>
-            <div style={{ fontSize: expanded ? 16 : 10, fontWeight: 700, color: 'var(--accent-cyan)', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.02em' }}>
-              {cam.id}
-            </div>
-            <div style={{ fontSize: expanded ? 14 : 11, color: 'var(--text-primary)', fontWeight: 600, marginTop: 1 }}>
-              {cam.location?.split(',')[0] || cam.location}
-            </div>
-          </div>
-          <span className={`badge badge-${(cam.status || 'ONLINE').toLowerCase()}`} style={{ flexShrink: 0, fontSize: 8 }}>
-            {cam.status || 'ONLINE'}
-          </span>
+      {/* Camera metadata footer */}
+      <div className={`p-4 ${expanded ? 'bg-[var(--bg-panel)] relative z-10' : 'bg-[var(--bg-surface)]'}`}>
+        <div className="text-[13px] font-bold font-mono text-[var(--text-primary)] mb-0.5 tracking-tight">
+          {cam.id}
         </div>
-        <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>{cam.district} {cam.department && `· ${cam.department}`}</div>
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-          {cam.aiCapabilities?.map((cap: string) => (
-            <span key={cap} style={{ fontSize: 8, padding: '1px 5px', background: 'rgba(14,165,233,0.08)', color: 'var(--accent-cyan)', border: '1px solid rgba(14,165,233,0.15)', borderRadius: 3, fontWeight: 600 }}>
-              {cap}
-            </span>
-          ))}
+        <div className="text-[14px] font-medium text-[var(--text-secondary)] mb-3">
+          {cam.location?.split(',')[0] || cam.location}
         </div>
-        <div className="flex items-center gap-3 mt-2">
-          <div style={{ fontSize: 9, color: 'var(--text-muted)' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>{cam.resolution || '1080p'}</span> · <span style={{ color: 'var(--text-secondary)' }}>{cam.source_type || cam.integration}</span>
-          </div>
+        
+        <div className="flex items-center gap-2 text-[11px] font-mono text-[var(--text-muted)]">
+          <span>{cam.source_type || cam.integration || 'RTSP'}</span>
+          <span>·</span>
+          <span>{cam.fps || 25} FPS</span>
+          {cam.aiCapabilities && cam.aiCapabilities.length > 0 && (
+            <>
+              <span>·</span>
+              <span className="text-[var(--accent-cyan)] font-semibold">{cam.aiCapabilities[0]}</span>
+            </>
+          )}
         </div>
       </div>
     </div>

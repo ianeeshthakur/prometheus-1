@@ -76,23 +76,23 @@ export function LiveCameraPlayer({ cameraId, status }: LiveCameraPlayerProps) {
   // Fallback UI rendering based on status
   if (status === 'STARTING' || status === 'RECONNECTING') {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0a0f18] text-white">
-        <RefreshCw size={24} className="animate-spin text-blue-500 mb-2 opacity-70" />
-        <span className="text-xs font-bold tracking-widest text-blue-500">{status}</span>
-        <span className="text-[10px] text-gray-500 mt-1 font-mono">{cameraId}</span>
+      <div className="w-full h-full flex flex-col items-center justify-center bg-black text-white">
+        <RefreshCw size={24} className="animate-spin text-[var(--accent-cyan)] mb-2 opacity-70" />
+        <span className="text-xs font-bold tracking-widest text-[var(--accent-cyan)]">{status}</span>
+        <span className="text-[10px] text-[var(--text-muted)] mt-1 font-mono">{cameraId}</span>
       </div>
     );
   }
 
   if (status === 'OFFLINE' || status === 'ERROR') {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-[#0a0f18] text-white relative">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-black text-white relative">
         {/* Background static simulation for offline cameras */}
         <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')]" />
         
-        <WifiOff size={24} className="text-red-500 mb-2 opacity-70" />
-        <span className="text-xs font-bold tracking-widest text-red-500">{status}</span>
-        <span className="text-[10px] text-gray-500 mt-1 font-mono">{cameraId}</span>
+        <WifiOff size={24} className="text-[var(--status-offline)] mb-2 opacity-70" />
+        <span className="text-xs font-bold tracking-widest text-[var(--status-offline)]">{status}</span>
+        <span className="text-[10px] text-[var(--text-muted)] mt-1 font-mono">{cameraId}</span>
       </div>
     );
   }

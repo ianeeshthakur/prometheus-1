@@ -150,9 +150,13 @@ export interface Alert {
   lat: number;
   lng: number;
   timestamp: string;
+  confidence?: number;
+  source?: string;
+  watchlistType?: string;
+  evidenceImage?: string;
   acknowledgedBy?: string;
   investigationId?: string;
-  actionButtons: ('VIEW_LIVE' | 'TRACE_VEHICLE' | 'TRACE_PERSON' | 'OPEN_INVESTIGATION')[];
+  actionButtons: ('VIEW_LIVE' | 'TRACE_VEHICLE' | 'TRACE_PERSON' | 'OPEN_INVESTIGATION' | 'VIEW_DETAILS' | 'CREATE_CASE' | 'DIAGNOSTICS' | 'RETRY' | 'VIEW_CAMERA')[];
   relatedEvents?: string[];
 }
 

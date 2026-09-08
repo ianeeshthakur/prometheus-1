@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   keywords: ["Gujarat Police", "CCTV", "Video Intelligence", "ANPR", "AI Analytics", "Surveillance", "G-VISTA"],
 };
 
+import { ThemeProvider } from "next-themes";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,7 +18,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <AppShell>{children}</AppShell>
+        <ThemeProvider attribute="class" defaultTheme="light">
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );

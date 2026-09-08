@@ -107,9 +107,9 @@ class StreamManager:
         status = self.statuses[camera_id]
         runner = self.runners.get(camera_id)
         
-        # Mock metrics based on status for realism
-        fps = 25 if status == "LIVE" else 0
-        latency_ms = 420 if status == "LIVE" else 0
+        # Use real metrics from ffprobe if available
+        fps = runner.fps if runner and status == "LIVE" else 0
+        latency_ms = 420 if status == "LIVE" else 0 # Latency is hard to measure accurately from HLS without client feedback
         uptime = runner.get_uptime_seconds() if runner else 0
         
         return StreamStatus(

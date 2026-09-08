@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { CAMERA_CLUSTERS, DEMO_VEHICLE, ALERTS } from '@/lib/mock-data';
 import { DemoPhase } from '@/lib/demo-engine';
 import { MapPin, Zap } from 'lucide-react';
@@ -21,21 +22,22 @@ export function GujaratMap({
   onAlertClick,
 }: GujaratMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const leafletMapRef = useRef<unknown>(null);
+  const leafletMapRef = useRef<any>(null);
+  const tileLayerRef = useRef<any>(null);
+  const { theme } = useTheme();
+  const [mapType, setMapType] = useState<'satellite' | 'streets'>('satellite');
   const [mapReady, setMapReady] = useState(false);
-  const clusterLayerRef = useRef<unknown>(null);
-  const traceLayerRef = useRef<unknown>(null);
-  const incidentLayerRef = useRef<unknown>(null);
+  const clusterLayerRef = useRef<any>(null);
+  const traceLayerRef = useRef<any>(null);
+  const incidentLayerRef = useRef<any>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mapRef.current || leafletMapRef.current) return;
 
     import('leaflet').then((L) => {
-      // Prevent double init or null ref if component unmounted while importing
       if (!mapRef.current || leafletMapRef.current || (mapRef.current as any)._leaflet_id) return;
 
       // Fix default icon
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       delete (L.Icon.Default.prototype as any)._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -44,19 +46,20 @@ export function GujaratMap({
       });
 
       const map = L.map(mapRef.current!, {
-        center: [22.3, 71.6],
-        zoom: 7,
+        center: [22.2587, 71.1924],
+        zoom: 6,
         zoomControl: true,
-        attributionControl: false,
+        attributionControl: true,
         minZoom: 6,
-        maxZoom: 15,
+        maxZoom: 16,
       });
 
-      // Dark tile layer
-      L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        { attribution: '', maxZoom: 19, subdomains: 'abcd' }
-      ).addTo(map);
+      const tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+
+      tileLayerRef.current = L.tileLayer(tileUrl, { 
+        attribution: 'Tiles &copy; Esri', 
+        maxZoom: 19, 
+      }).addTo(map);
 
       leafletMapRef.current = map;
 
@@ -99,30 +102,58 @@ export function GujaratMap({
         });
 
         const marker = L.marker([cluster.lat, cluster.lng], { icon });
-        marker.bindPopup(`
-          <div style="font-family:Inter,sans-serif;min-width:160px">
-            <div style="font-size:13px;font-weight:700;color:#f0f4f8;margin-bottom:6px">${cluster.district}</div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-              <span style="font-size:11px;color:#94a3b8">Total Cameras</span>
-              <span style="font-size:11px;font-weight:600;color:#0ea5e9;font-family:JetBrains Mono,monospace">${cluster.total.toLocaleString()}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-              <span style="font-size:11px;color:#94a3b8">Online</span>
-              <span style="font-size:11px;font-weight:600;color:#10b981;font-family:JetBrains Mono,monospace">${cluster.online.toLocaleString()}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-              <span style="font-size:11px;color:#94a3b8">Offline</span>
-              <span style="font-size:11px;font-weight:600;color:#6b7280;font-family:JetBrains Mono,monospace">${cluster.offline}</span>
-            </div>
-            ${hasAlert ? '<div style="margin-top:8px;padding:4px 8px;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:4px;font-size:10px;font-weight:700;color:#ef4444;letter-spacing:0.05em">⚠ ACTIVE ALERT</div>' : ''}
-          </div>
-        `, { className: 'leaflet-popup-custom' });
+        
+        marker.on('click', () => {
+          const currentZoom = map.getZoom();
+          const targetZoom = Math.min(currentZoom + 3, 14); // Zoom in by 3 levels, max 14
+          map.flyTo([cluster.lat, cluster.lng], targetZoom, {
+            duration: 0.8,
+            easeLinearity: 0.25
+          });
+        });
 
         marker.addTo(clusterGroup);
       });
 
       clusterGroup.addTo(map);
       clusterLayerRef.current = clusterGroup;
+
+      const cameraLayerRef = { current: L.layerGroup() };
+
+      // Generate some individual cameras from CAMERAS mock data
+      import('@/lib/mock-data').then(({ CAMERAS }) => {
+        CAMERAS.forEach((cam) => {
+          const icon = L.divIcon({
+            html: `
+              <div style="width:16px;height:16px;border-radius:50%;background:${cam.status === 'ONLINE' ? '#10b981' : cam.status === 'OFFLINE' ? '#ef4444' : '#f59e0b'};border:2px solid rgba(255,255,255,0.8);box-shadow:0 2px 4px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+                <div style="width:4px;height:4px;border-radius:50%;background:white"></div>
+              </div>
+            `,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
+            className: ''
+          });
+
+          const marker = L.marker([cam.lat, cam.lng], { icon });
+          marker.on('click', () => {
+            map.flyTo([cam.lat, cam.lng], 15, { duration: 0.6 });
+            if (onCameraClick) onCameraClick(cam.id);
+          });
+          marker.addTo(cameraLayerRef.current);
+        });
+      });
+
+      // Handle zoom events to toggle between clusters and cameras
+      map.on('zoomend', () => {
+        const zoom = map.getZoom();
+        if (zoom >= 11) {
+          if (map.hasLayer(clusterGroup)) map.removeLayer(clusterGroup);
+          if (!map.hasLayer(cameraLayerRef.current)) map.addLayer(cameraLayerRef.current);
+        } else {
+          if (!map.hasLayer(clusterGroup)) map.addLayer(clusterGroup);
+          if (map.hasLayer(cameraLayerRef.current)) map.removeLayer(cameraLayerRef.current);
+        }
+      });
 
       setMapReady(true);
     });
@@ -141,15 +172,6 @@ export function GujaratMap({
 
     import('leaflet').then((L) => {
       const map = leafletMapRef.current as { flyTo: (c: [number, number], z: number, opts: object) => void; removeLayer: (l: unknown) => void };
-
-      // Zoom to target
-      if (mapZoomTarget) {
-        map.flyTo(
-          [mapZoomTarget.lat, mapZoomTarget.lng],
-          mapZoomTarget.zoom,
-          { duration: 1.5, easeLinearity: 0.5 }
-        );
-      }
 
       // Show trace path
       if (showTracePath && DEMO_VEHICLE.sightings.length > 0) {
@@ -220,27 +242,26 @@ export function GujaratMap({
         const alertLocation = ALERTS[0];
         const pulseIcon = L.divIcon({
           html: `
-            <div style="position:relative;width:32px;height:32px;display:flex;align-items:center;justify-content:center">
-              <div style="position:absolute;width:32px;height:32px;border-radius:50%;border:2px solid #ef4444;animation:pulse-critical 1.5s ease-in-out infinite;opacity:0.6"></div>
-              <div style="position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid #ef4444;animation:pulse-critical 1.5s ease-in-out infinite 0.3s;opacity:0.4"></div>
-              <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444"></div>
+            <div style="position:relative;width:24px;height:24px;display:flex;align-items:center;justify-content:center">
+              <div style="position:absolute;width:24px;height:24px;border-radius:50%;border:1px solid rgba(239, 68, 68, 0.6);animation:pulse-critical 2.5s ease-in-out infinite;opacity:0.6"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;border:1px solid #7f1d1d"></div>
             </div>
           `,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
           className: '',
         });
 
-        L.marker([alertLocation.lat, alertLocation.lng], { icon: pulseIcon })
-          .bindPopup(`
-            <div style="font-family:Inter,sans-serif">
-              <div style="font-size:10px;font-weight:700;color:#ef4444;letter-spacing:0.05em;margin-bottom:4px">⚠ STOLEN VEHICLE</div>
-              <div style="font-size:12px;font-weight:700;color:#f0f4f8">GJ05XX7821</div>
-              <div style="font-size:10px;color:#94a3b8;margin-top:2px">${alertLocation.cameraLocation}</div>
-              <div style="font-size:10px;color:#0ea5e9;font-family:JetBrains Mono,monospace;margin-top:2px">21:43:18</div>
-            </div>
-          `)
-          .addTo(incidentGroup);
+        const marker = L.marker([alertLocation.lat, alertLocation.lng], { icon: pulseIcon });
+        
+        marker.on('click', () => {
+          map.flyTo([alertLocation.lat, alertLocation.lng], 16, { duration: 0.8 });
+          if (onAlertClick) {
+            onAlertClick(alertLocation.id);
+          }
+        });
+        
+        marker.addTo(incidentGroup);
 
         incidentGroup.addTo(lmap);
         incidentLayerRef.current = incidentGroup;
@@ -248,9 +269,42 @@ export function GujaratMap({
     });
   }, [demoPhase, showTracePath, mapZoomTarget, mapReady]);
 
+  // Handle Map Type Changes
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      if (mapType === 'satellite') {
+        tileLayerRef.current.setUrl('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+      } else {
+        tileLayerRef.current.setUrl('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+      }
+    }
+  }, [mapType]);
+
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full bg-[var(--bg-primary)]">
       <div ref={mapRef} className="w-full h-full" />
+
+      {/* Map Control */}
+      <div 
+        className="absolute top-4 left-4 bg-[var(--bg-panel)]/90 backdrop-blur-md border border-[var(--border)] rounded-lg p-2 shadow-[var(--shadow-elevated)] flex flex-col gap-1"
+        style={{ zIndex: 1000 }}
+      >
+        <div className="text-[10px] font-bold text-[var(--text-muted)] tracking-wider px-2 py-1 mb-1">MAP LAYER</div>
+        <button 
+          onClick={() => setMapType('satellite')}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${mapType === 'satellite' ? 'bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/20' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)]'}`}
+        >
+          <div className={`w-2 h-2 rounded-full ${mapType === 'satellite' ? 'bg-[var(--accent-cyan)]' : 'border border-[var(--text-muted)]'}`} />
+          Satellite
+        </button>
+        <button 
+          onClick={() => setMapType('streets')}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[12px] font-medium transition-colors ${mapType === 'streets' ? 'bg-[var(--accent-cyan)]/10 text-[var(--accent-cyan)] border border-[var(--accent-cyan)]/20' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)]'}`}
+        >
+          <div className={`w-2 h-2 rounded-full ${mapType === 'streets' ? 'bg-[var(--accent-cyan)]' : 'border border-[var(--text-muted)]'}`} />
+          Streets
+        </button>
+      </div>
 
       {/* Map Legend */}
       <div

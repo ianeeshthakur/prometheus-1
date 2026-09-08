@@ -16,6 +16,9 @@ class FFmpegRunner:
         self.start_time: Optional[datetime] = None
         self.is_running = False
         self._on_stop_callback: Optional[Callable] = None
+        self.fps = 0
+        self.resolution = ""
+        self.codec = ""
 
         # Ensure camera-specific output directory exists
         self.camera_hls_dir = os.path.join(output_dir, camera_id)
@@ -30,12 +33,53 @@ class FFmpegRunner:
         # Clean up old HLS files
         self._cleanup_old_files()
 
+        # STEP 4 - FFprobe connection test
+        probe_cmd = [
+            "ffprobe",
+            "-v", "error",
+            "-rtsp_transport", "tcp",
+            "-select_streams", "v:0",
+            "-show_entries", "stream=codec_name,width,height,r_frame_rate",
+            "-of", "default=noprint_wrappers=1:nokey=1",
+            "-timeout", "5000000",  # 5 seconds in microseconds
+            self.rtsp_url
+        ]
+
+        logger.info(f"[{self.camera_id}] Probing RTSP stream for connection...")
+        try:
+            probe_proc = await asyncio.create_subprocess_exec(
+                *probe_cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            stdout, stderr = await probe_proc.communicate()
+
+            if probe_proc.returncode != 0:
+                err_msg = stderr.decode().strip()
+                logger.error(f"[{self.camera_id}] Connection test failed. Reason: {err_msg}")
+                return False
+
+            probe_info = stdout.decode().strip().split('\n')
+            if len(probe_info) >= 4:
+                codec, width, height, fps_str = probe_info[:4]
+                self.fps = round(eval(fps_str)) if '/' in fps_str else float(fps_str)
+                self.resolution = f"{width}x{height}"
+                self.codec = codec
+                logger.info(f"[{self.camera_id}] CONNECTED. Codec: {self.codec}, Resolution: {self.resolution}, FPS: {self.fps}")
+            else:
+                self.fps = 25
+                self.resolution = "Unknown"
+                self.codec = "Unknown"
+                logger.info(f"[{self.camera_id}] CONNECTED. But could not fully parse probe info.")
+        except Exception as e:
+            logger.error(f"[{self.camera_id}] ffprobe execution failed: {e}")
+            return False
+
         # Build FFmpeg command
         cmd = [
             "ffmpeg",
             "-rtsp_transport", "tcp",
             "-i", self.rtsp_url,
-            # Video codec and preset for low latency HLS
             "-c:v", "libx264",
             "-preset", "ultrafast",
             "-tune", "zerolatency",
@@ -57,7 +101,7 @@ class FFmpegRunner:
             self.process = await asyncio.create_subprocess_exec(
                 *cmd,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL # In production, you might want to capture stderr to log errors
+                stderr=subprocess.DEVNULL
             )
             self.is_running = True
             self.start_time = datetime.now()
