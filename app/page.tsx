@@ -138,7 +138,7 @@ export default function CommandCenterPage() {
           <DemoProcessLog logs={demoState.processLog} phase={demoState.phase} />
         </div>
         
-        <div className="relative w-[400px] flex-shrink-0 flex flex-col h-full bg-[var(--bg-panel)] overflow-hidden">
+        <div className="relative w-[320px] flex-shrink-0 flex flex-col h-full bg-[var(--bg-panel)] overflow-hidden">
           <IntelligenceDrawer 
             onAlertClick={handleAlertClick}
             onTrace={handleTrace}
