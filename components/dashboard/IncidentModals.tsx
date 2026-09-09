@@ -82,22 +82,58 @@ export function IncidentDetailsModal({ alert, onClose, onCreateCase, onTrace }: 
           </div>
 
           <div>
-            <div className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider mb-3 uppercase">Detection Chain</div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-3 text-[12px] font-mono text-[var(--text-secondary)]">
-                <Video size={14} /> <span>CAMERA STREAM ACTIVE</span>
+            <div className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider mb-3 uppercase">Related Sightings & Timeline</div>
+            <div className="flex flex-col gap-1 relative pl-2">
+              <div className="absolute left-[13px] top-2 bottom-2 w-px bg-[var(--border)]"></div>
+              
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="w-6 h-6 rounded-full bg-[var(--bg-input)] border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                  <Video size={10} className="text-[var(--text-secondary)]" />
+                </div>
+                <div className="pb-4">
+                  <div className="text-[12px] font-bold text-[var(--text-primary)]">21:31 — Vehicle First Detected</div>
+                  <div className="text-[11px] text-[var(--text-secondary)]">SP Ring Road, Bopal Junction</div>
+                </div>
               </div>
-              <div className="w-px h-3 bg-[var(--border)] ml-[6px]"></div>
-              <div className="flex items-center gap-3 text-[12px] font-mono text-[var(--text-secondary)]">
-                <Search size={14} /> <span>OBJECT DETECTION ({alert.entityType})</span>
+
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="w-6 h-6 rounded-full bg-[var(--bg-input)] border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                  <Search size={10} className="text-[var(--text-secondary)]" />
+                </div>
+                <div className="pb-4">
+                  <div className="text-[12px] font-bold text-[var(--text-primary)]">21:34 — Cross-Camera Match</div>
+                  <div className="text-[11px] text-[var(--text-secondary)]">Ahmedabad Ring Road Interchange</div>
+                </div>
               </div>
-              <div className="w-px h-3 bg-[var(--border)] ml-[6px]"></div>
-              <div className="flex items-center gap-3 text-[12px] font-mono text-[var(--accent-cyan)]">
-                <Shield size={14} /> <span>{alert.watchlistType ? 'WATCHLIST MATCH' : 'BEHAVIORAL ANALYSIS'}</span>
+
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="w-6 h-6 rounded-full bg-[var(--bg-input)] border border-[var(--border)] flex items-center justify-center shrink-0 mt-0.5">
+                  <Video size={10} className="text-[var(--text-secondary)]" />
+                </div>
+                <div className="pb-4">
+                  <div className="text-[12px] font-bold text-[var(--text-primary)]">21:41 — New Sighting</div>
+                  <div className="text-[11px] text-[var(--text-secondary)]">Sachin GIDC Entry, Surat</div>
+                </div>
               </div>
-              <div className="w-px h-3 bg-[var(--border)] ml-[6px]"></div>
-              <div className="flex items-center gap-3 text-[12px] font-mono text-[var(--status-critical)]">
-                <AlertTriangle size={14} /> <span>ALERT GENERATED</span>
+
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="w-6 h-6 rounded-full bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 flex items-center justify-center shrink-0 mt-0.5">
+                  <Shield size={10} className="text-[var(--status-warning)]" />
+                </div>
+                <div className="pb-4">
+                  <div className="text-[12px] font-bold text-[var(--text-primary)]">21:43 — Watchlist Correlation</div>
+                  <div className="text-[11px] text-[var(--text-secondary)]">{alert.watchlistType || 'Stolen Vehicle Database'} match ({alert.confidence}%)</div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="w-6 h-6 rounded-full bg-[var(--status-critical)]/10 border border-[var(--status-critical)]/30 flex items-center justify-center shrink-0 mt-0.5">
+                  <AlertTriangle size={10} className="text-[var(--status-critical)]" />
+                </div>
+                <div>
+                  <div className="text-[12px] font-bold text-[var(--status-critical)]">21:43:21 — Alert Escalated</div>
+                  <div className="text-[11px] text-[var(--text-secondary)]">Broadcast to Command Center</div>
+                </div>
               </div>
             </div>
           </div>

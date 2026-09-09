@@ -99,6 +99,10 @@ export default function CommandCenterPage() {
     router.push('/investigations/INV-2026-00482');
   };
 
+  const handleAlertClick = useCallback((id: string) => {
+    setDemoState(prev => ({ ...prev, activeAlertId: id }));
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-[var(--bg-primary)] overflow-hidden">
       <KeyMetricsRow />
@@ -110,9 +114,7 @@ export default function CommandCenterPage() {
             demoPhase={demoState.phase}
             showTracePath={demoState.showTracePath}
             mapZoomTarget={demoState.mapZoomTarget}
-            onAlertClick={(id) => {
-              setDemoState(prev => ({ ...prev, activeAlertId: id }));
-            }}
+            onAlertClick={handleAlertClick}
             onCameraClick={(id) => {
               setActiveCameraId(id);
             }}
@@ -122,7 +124,7 @@ export default function CommandCenterPage() {
         
         <div className="relative w-[400px] flex-shrink-0 flex flex-col h-full bg-[var(--bg-panel)] overflow-hidden">
           <IntelligenceDrawer 
-            onAlertClick={(id) => setDemoState(prev => ({ ...prev, activeAlertId: id }))}
+            onAlertClick={handleAlertClick}
             onTrace={handleTrace}
             onInvestigate={handleInvestigate}
           />
