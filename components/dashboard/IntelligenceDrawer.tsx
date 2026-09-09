@@ -111,7 +111,7 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
             return (
               <div key={alert.alertId} className={`rounded-xl border ${borderColor} ${bgColor} overflow-hidden shadow-md transition-all duration-300`}>
                 {/* Header */}
-                <div className="p-4 border-b border-[var(--border)]">
+                <div className="px-4 py-4 border-b border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     {isCritical ? <AlertTriangle size={14} className="text-[var(--status-critical)]" /> : <Shield size={14} className="text-[var(--accent-cyan)]" />}
                     <span className={`text-[10px] font-bold tracking-wider uppercase ${isCritical ? 'text-[var(--status-critical)]' : 'text-[var(--accent-cyan)]'}`}>
@@ -133,7 +133,7 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
                 )}
                 
                 {/* Metadata */}
-                <div className="p-4 grid grid-cols-2 gap-y-3 gap-x-4">
+                <div className="px-4 py-4 grid grid-cols-2 gap-y-3 gap-x-4">
                   <div>
                     <div className="text-[10px] font-bold text-[var(--text-muted)] tracking-wider mb-1 uppercase">Subject</div>
                     <div className="text-[12px] font-mono text-[var(--text-primary)]">{alert.entityDescription}</div>
@@ -161,16 +161,16 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
                 </div>
 
                 {/* Actions */}
-                <div className="p-3 bg-[var(--bg-secondary)] border-t border-[var(--border)] flex flex-wrap gap-2">
-                  <button onClick={() => setDetailsAlert(alert)} className="flex-1 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded text-[11px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors">
+                <div className="px-4 py-3 bg-[var(--bg-secondary)] border-t border-[var(--border)] flex flex-wrap gap-3">
+                  <button onClick={() => setDetailsAlert(alert)} className="flex-1 px-3 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-md text-[12px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors text-center shadow-sm">
                     View Details
                   </button>
-                  <button onClick={() => setCreateCaseAlert(alert)} className="flex-1 py-1.5 bg-[var(--accent-blue)] rounded text-[11px] font-bold text-white hover:bg-[var(--accent-blue-bright)] transition-colors shadow-sm">
-                    Create Case
+                  <button onClick={() => setCreateCaseAlert(alert)} className="flex-1 px-3 py-1.5 bg-[var(--accent-blue)] rounded-md text-[12px] font-bold text-white hover:bg-[var(--accent-blue-bright)] transition-colors shadow-sm text-center">
+                    Open Case
                   </button>
                   {(alert.actionButtons.includes('TRACE_VEHICLE') || alert.actionButtons.includes('TRACE_PERSON')) && (
-                    <button onClick={onTrace} className="w-full py-1.5 bg-[var(--bg-surface)] border border-[var(--border)] rounded text-[11px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors flex justify-center items-center gap-1.5 mt-1">
-                      <Navigation size={12} /> Track Subject
+                    <button onClick={onTrace} className="w-full px-3 py-2 bg-[var(--bg-surface)] border border-[var(--border)] rounded-md text-[12px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors flex justify-center items-center gap-1.5 mt-1 shadow-sm">
+                      <Navigation size={14} /> Track Subject
                     </button>
                   )}
                 </div>
@@ -185,7 +185,7 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
             <div 
               key={alert.alertId} 
               onClick={() => handleSelect(alert)}
-              className={`p-4 rounded-xl border ${borderColor} ${bgColor} ${hoverBg} cursor-pointer transition-all shadow-sm`}
+              className={`px-4 py-4 rounded-xl border ${borderColor} ${bgColor} ${hoverBg} cursor-pointer transition-all shadow-sm`}
             >
               <div className="flex gap-4">
                 <div className="mt-1 shrink-0">
@@ -218,10 +218,10 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
                   </div>
                   {/* Quick Action */}
                   <div className="mt-3 flex gap-2">
-                    <button onClick={(e) => { e.stopPropagation(); setDetailsAlert(alert); }} className="flex-1 py-1.5 bg-[var(--bg-input)] hover:bg-[var(--bg-elevated)] border border-[var(--border)] rounded-md text-[11px] font-bold text-[var(--text-primary)] transition-colors text-center">
+                    <button onClick={(e) => { e.stopPropagation(); setDetailsAlert(alert); }} className="flex-1 px-3 py-1.5 bg-[var(--bg-input)] hover:bg-[var(--bg-elevated)] border border-[var(--border)] rounded-md text-[11px] font-bold text-[var(--text-primary)] transition-colors text-center">
                       View Details
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setCreateCaseAlert(alert); }} className="flex-1 py-1.5 bg-[var(--accent-blue)]/10 hover:bg-[var(--accent-blue)]/20 text-[var(--accent-blue)] rounded-md text-[11px] font-bold transition-colors text-center">
+                    <button onClick={(e) => { e.stopPropagation(); setCreateCaseAlert(alert); }} className="flex-1 px-3 py-1.5 bg-[var(--accent-blue)]/10 hover:bg-[var(--accent-blue)]/20 text-[var(--accent-blue)] rounded-md text-[11px] font-bold transition-colors text-center">
                       Open Case
                     </button>
                   </div>

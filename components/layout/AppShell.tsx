@@ -1,8 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
+import { AIAnalyticsDrawer } from '../dashboard/AIAnalyticsDrawer';
 import { isLiveMode } from '@/lib/mode';
 
 interface AppShellProps {
@@ -10,12 +12,16 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
+
   return (
-    <div className="app-shell flex h-screen overflow-hidden bg-[var(--bg-primary)]">
-      <Sidebar alertCount={2} />
+    <div className="app-shell flex h-screen overflow-hidden bg-[var(--bg-primary)] relative">
+      <Sidebar alertCount={2} onAnalyticsClick={() => setIsAnalyticsOpen(true)} />
       <div 
-        className="main-content flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
+        className="main-content flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out relative"
       >
+        <AIAnalyticsDrawer isOpen={isAnalyticsOpen} onClose={() => setIsAnalyticsOpen(false)} />
+        
         {/* Demo Banner */}
         <div className="demo-banner z-50 flex items-center justify-center h-5 text-[10px] font-bold tracking-wider border-b border-[var(--border)] bg-[var(--bg-secondary)]">
           {isLiveMode() ? (
