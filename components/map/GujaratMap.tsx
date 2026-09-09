@@ -101,13 +101,34 @@ export function GujaratMap({
           className: '',
         });
 
-        const marker = L.marker([cluster.lat, cluster.lng], { icon });
+        const marker = L.marker([cluster.lat, cluster.lng], { icon })
+          .bindPopup(`
+            <div style="font-family:Inter,sans-serif; min-width: 150px; padding: 2px;">
+              <div style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.05em">
+                ${cluster.district} Cluster
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:11px;color:#64748b;font-weight:500">Total Cameras</span>
+                <span style="font-size:11px;font-weight:700;color:#0f172a">${cluster.total.toLocaleString()}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:11px;color:#64748b;font-weight:500">Status</span>
+                <span style="font-size:11px;font-weight:700;color:#10b981">99% Online</span>
+              </div>
+              ${hasAlert ? `
+              <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid #fee2e2">
+                <span style="font-size:11px;font-weight:800;color:#ef4444;letter-spacing:0.02em">CRITICAL ALERTS</span>
+                <span style="font-size:11px;font-weight:800;color:#ef4444;background:#fef2f2;padding:2px 6px;border-radius:10px border:1px solid #fecaca">2 ACTIVE</span>
+              </div>
+              ` : ''}
+            </div>
+          `);
         
         marker.on('click', () => {
           const currentZoom = map.getZoom();
-          const targetZoom = Math.min(currentZoom + 3, 14); // Zoom in by 3 levels, max 14
+          const targetZoom = Math.max(12, Math.min(currentZoom + 2, 14));
           map.flyTo([cluster.lat, cluster.lng], targetZoom, {
-            duration: 0.8,
+            duration: 1.0,
             easeLinearity: 0.25
           });
         });
@@ -165,6 +186,16 @@ export function GujaratMap({
       }
     };
   }, []);
+
+  // Handle mapZoomTarget changes
+  useEffect(() => {
+    if (!mapReady || !leafletMapRef.current || !mapZoomTarget) return;
+    const map = leafletMapRef.current as L.Map;
+    map.flyTo([mapZoomTarget.lat, mapZoomTarget.lng], mapZoomTarget.zoom, {
+      duration: 1.2,
+      easeLinearity: 0.25
+    });
+  }, [mapZoomTarget, mapReady]);
 
   // Handle demo phase changes
   useEffect(() => {

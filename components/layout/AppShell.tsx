@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -11,34 +10,11 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
-
-  // Restore sidebar state from localStorage on mount
-  useEffect(() => {
-    const savedState = localStorage.getItem('gvista_sidebar_expanded');
-    if (savedState !== null) {
-      setSidebarExpanded(savedState === 'true');
-    }
-  }, []);
-
-  const toggleSidebar = () => {
-    setSidebarExpanded(prev => {
-      const nextState = !prev;
-      localStorage.setItem('gvista_sidebar_expanded', String(nextState));
-      return nextState;
-    });
-  };
-
   return (
     <div className="app-shell flex h-screen overflow-hidden bg-[var(--bg-primary)]">
-      <Sidebar 
-        alertCount={2} 
-        expanded={sidebarExpanded} 
-        onToggle={toggleSidebar} 
-      />
+      <Sidebar alertCount={2} />
       <div 
         className="main-content flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
-        style={{ marginLeft: sidebarExpanded ? '240px' : '72px' }}
       >
         {/* Demo Banner */}
         <div className="demo-banner z-50 flex items-center justify-center h-5 text-[10px] font-bold tracking-wider border-b border-[var(--border)] bg-[var(--bg-secondary)]">

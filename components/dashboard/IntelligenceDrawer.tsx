@@ -179,38 +179,50 @@ export function IntelligenceDrawer({ onAlertClick, onTrace, onInvestigate }: Int
           }
 
           // COMPACT CARD
+          const isPersonEvent = alert.type.includes('PERSON') || alert.actionButtons.includes('TRACE_PERSON');
+          
           return (
             <div 
               key={alert.alertId} 
               onClick={() => handleSelect(alert)}
-              className={`p-3 rounded-xl border ${borderColor} ${bgColor} ${hoverBg} cursor-pointer transition-colors`}
+              className={`p-4 rounded-xl border ${borderColor} ${bgColor} ${hoverBg} cursor-pointer transition-all shadow-sm`}
             >
-              <div className="flex gap-3">
-                <div className="mt-0.5 shrink-0">
-                  {isCritical ? <AlertTriangle size={14} className="text-[var(--status-critical)]" /> : 
-                   isWatchlist ? <Shield size={14} className="text-[var(--status-warning)]" /> :
-                   <Video size={14} className="text-[var(--text-muted)]" />}
+              <div className="flex gap-4">
+                <div className="mt-1 shrink-0">
+                  {isCritical ? <AlertTriangle size={16} className="text-[var(--status-critical)]" /> : 
+                   isWatchlist ? <Shield size={16} className="text-[var(--status-warning)]" /> :
+                   <Video size={16} className="text-[var(--text-muted)]" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[12px] font-semibold text-[var(--text-primary)] truncate mb-1">
+                  <div className="text-[13px] font-bold text-[var(--text-primary)] leading-snug mb-1">
                     {alert.title}
                   </div>
-                  <div className="text-[11px] font-mono text-[var(--text-secondary)] truncate mb-2">
+                  <div className="text-[12px] font-mono text-[var(--text-secondary)] truncate mb-2">
                     {alert.entityId}
                   </div>
-                  <div className="flex justify-between items-center text-[10px] text-[var(--text-muted)]">
+                  
+                  {(isPersonEvent && alert.evidenceImage) && (
+                    <div className="mb-3 mt-2 rounded-lg overflow-hidden border border-[var(--border)] w-[110px] h-[80px] shrink-0 shadow-sm relative">
+                      <img src={alert.evidenceImage} alt="Evidence" className="w-full h-full object-cover" />
+                      <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-black/60 backdrop-blur rounded text-[8px] font-bold text-white tracking-widest">
+                        MATCH
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center text-[11px] text-[var(--text-muted)]">
                     <span className="truncate max-w-[160px]">{alert.cameraLocation}</span>
                     <span className="font-mono whitespace-nowrap ml-2">
                       {new Date(alert.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false })}
                     </span>
                   </div>
                   {/* Quick Action */}
-                  <div className="mt-2 flex gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                    <button onClick={(e) => { e.stopPropagation(); setDetailsAlert(alert); }} className="px-2 py-1 bg-[var(--bg-input)] rounded text-[9px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-                      View
+                  <div className="mt-3 flex gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); setDetailsAlert(alert); }} className="flex-1 py-1.5 bg-[var(--bg-input)] hover:bg-[var(--bg-elevated)] border border-[var(--border)] rounded-md text-[11px] font-bold text-[var(--text-primary)] transition-colors text-center">
+                      View Details
                     </button>
-                    <button onClick={(e) => { e.stopPropagation(); setCreateCaseAlert(alert); }} className="px-2 py-1 bg-[var(--bg-input)] rounded text-[9px] font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
-                      Case
+                    <button onClick={(e) => { e.stopPropagation(); setCreateCaseAlert(alert); }} className="flex-1 py-1.5 bg-[var(--accent-blue)]/10 hover:bg-[var(--accent-blue)]/20 text-[var(--accent-blue)] rounded-md text-[11px] font-bold transition-colors text-center">
+                      Open Case
                     </button>
                   </div>
                 </div>

@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, Camera, AlertTriangle, Brain, Search,
   Shield, Network, BarChart3, Activity, Settings,
-  ChevronRight, Wifi, Eye, PanelLeftClose, PanelLeftOpen
+  Eye
 } from 'lucide-react';
 
 const NAV_GROUPS = [
@@ -44,24 +43,22 @@ const NAV_GROUPS = [
 
 interface SidebarProps {
   alertCount: number;
-  expanded?: boolean;
-  onToggle?: () => void;
 }
 
-export function Sidebar({ alertCount, expanded = false, onToggle }: SidebarProps) {
+export function Sidebar({ alertCount }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
     <aside
-      className={`relative h-full flex flex-col transition-all duration-300 ease-in-out ${expanded ? 'w-[240px]' : 'w-[72px]'}`}
+      className="relative h-full flex flex-col w-[190px] shrink-0"
       style={{
         background: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border)',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: '1px solid var(--border)', minHeight: '52px' }}>
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-[var(--border)] min-h-[60px]">
         <div
           className="flex-shrink-0 flex items-center justify-center rounded-lg"
           style={{
@@ -77,27 +74,23 @@ export function Sidebar({ alertCount, expanded = false, onToggle }: SidebarProps
             <path d="M5.6 5.6 L4.2 4.2 M19.8 4.2 L18.4 5.6 M5.6 18.4 L4.2 19.8 M18.4 18.4 L19.8 19.8" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
           </svg>
         </div>
-        {expanded && (
-          <div className="animate-fade-in overflow-hidden">
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.05em', lineHeight: 1.2 }}>G-VISTA</div>
-            <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 1 }}>Gujarat Police</div>
-          </div>
-        )}
+        <div className="overflow-hidden">
+          <div style={{ fontSize: 14, fontWeight: 800, color: '#f0f4f8', letterSpacing: '0.05em', lineHeight: 1.2 }}>G-VISTA</div>
+          <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.06em', textTransform: 'uppercase', lineHeight: 1 }}>Gujarat Police</div>
+        </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-2 overflow-y-auto overflow-x-hidden">
+      <nav className="flex-1 py-4 overflow-y-auto overflow-x-hidden px-3">
         {NAV_GROUPS.map((group, groupIdx) => (
-          <div key={groupIdx} className="mb-4">
-            {expanded && (
-              <div className="px-[14px] mb-1">
-                <span className="text-[10px] font-bold tracking-[0.06em] text-[var(--text-muted)] animate-fade-in">
-                  {group.title}
-                </span>
-              </div>
-            )}
+          <div key={groupIdx} className="mb-6">
+            <div className="px-3 mb-2">
+              <span className="text-[11px] font-bold tracking-[0.08em] text-[var(--text-muted)] uppercase">
+                {group.title}
+              </span>
+            </div>
             
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1.5">
               {group.items.map((item) => {
                 const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
                 const Icon = item.icon;
@@ -107,29 +100,22 @@ export function Sidebar({ alertCount, expanded = false, onToggle }: SidebarProps
                   <button
                     key={item.id}
                     onClick={() => router.push(item.path)}
-                    className={`sidebar-item w-full flex items-center gap-3 px-[14px] py-[8px] text-left transition-all duration-150 ${isActive ? 'active' : ''}`}
-                    style={{
-                      background: isActive ? 'var(--bg-input)' : 'transparent',
-                      color: isActive ? 'var(--text-accent)' : 'var(--text-secondary)',
-                      borderLeft: isActive ? '3px solid var(--accent-cyan)' : '3px solid transparent',
-                    }}
+                    className={`group w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all duration-200 ${isActive ? 'bg-[var(--accent-cyan)]/10 text-[var(--text-accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)] hover:text-[var(--text-primary)]'}`}
                   >
                     <div className="relative flex-shrink-0">
-                      <Icon size={18} />
+                      <Icon size={20} className={isActive ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors'} />
                       {isAlerts && alertCount > 0 && (
                         <span
-                          className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full text-white font-bold"
-                          style={{ width: 14, height: 14, fontSize: 8, background: 'var(--status-critical)', lineHeight: 1 }}
+                          className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full text-white font-bold border border-[var(--bg-secondary)]"
+                          style={{ width: 16, height: 16, fontSize: 9, background: 'var(--status-critical)', lineHeight: 1 }}
                         >
                           {alertCount > 9 ? '9+' : alertCount}
                         </span>
                       )}
                     </div>
-                    {expanded && (
-                      <span className="animate-fade-in text-xs font-medium whitespace-nowrap overflow-hidden" style={{ fontSize: 13 }}>
-                        {item.label}
-                      </span>
-                    )}
+                    <span className="text-[13px] font-medium whitespace-nowrap overflow-hidden">
+                      {item.label}
+                    </span>
                   </button>
                 );
               })}
@@ -137,16 +123,11 @@ export function Sidebar({ alertCount, expanded = false, onToggle }: SidebarProps
           </div>
         ))}
       </nav>
-
-      {/* System Status Footer */}
-      <div className="mt-auto flex flex-col" style={{ borderTop: '1px solid var(--border)' }}>
-        <button 
-          onClick={onToggle}
-          className="flex items-center justify-center p-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-input)] transition-colors"
-          title={expanded ? "Collapse Sidebar" : "Expand Sidebar"}
-        >
-          {expanded ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-        </button>
+      
+      <div className="p-4 border-t border-[var(--border)]">
+        <div className="text-[10px] text-[var(--text-muted)] text-center font-mono">
+          v2.4.1 • ENCRYPTED
+        </div>
       </div>
     </aside>
   );

@@ -103,13 +103,29 @@ export default function CommandCenterPage() {
     setDemoState(prev => ({ ...prev, activeAlertId: id }));
   }, []);
 
+  const handleClusterClick = useCallback((clusterName: string) => {
+    const clusterCoords: Record<string, { lat: number, lng: number }> = {
+      'Ahmedabad': { lat: 23.0225, lng: 72.5714 },
+      'Surat': { lat: 21.1702, lng: 72.8311 },
+      'Rajkot': { lat: 22.3039, lng: 70.8022 },
+      'Vadodara': { lat: 22.3072, lng: 73.1812 }
+    };
+    
+    if (clusterCoords[clusterName]) {
+      setDemoState(prev => ({
+        ...prev,
+        mapZoomTarget: { lat: clusterCoords[clusterName].lat, lng: clusterCoords[clusterName].lng, zoom: 14 }
+      }));
+    }
+  }, []);
+
   return (
     <div className="flex flex-col h-full bg-[var(--bg-primary)] overflow-hidden">
       <KeyMetricsRow />
       
       <div className="flex flex-1 min-h-0 relative">
-        <LeftOperationalPanel />
-        <div className="flex-1 relative">
+        <LeftOperationalPanel onClusterClick={handleClusterClick} />
+        <div className="flex-1 relative min-w-0">
           <GujaratMap
             demoPhase={demoState.phase}
             showTracePath={demoState.showTracePath}
