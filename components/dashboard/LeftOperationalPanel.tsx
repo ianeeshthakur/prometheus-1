@@ -21,7 +21,7 @@ export function LeftOperationalPanel({ onClusterClick }: LeftOperationalPanelPro
   ];
 
   return (
-    <div className="w-[300px] shrink-0 border-r border-[var(--border)] bg-[var(--bg-panel)] flex flex-col h-full overflow-y-auto">
+    <div className="w-[250px] shrink-0 border-r border-[var(--border)] bg-[var(--bg-panel)] flex flex-col h-full overflow-y-auto">
       {/* Network Overview */}
       <div className="p-5 border-b border-[var(--border)]">
         <h2 className="text-[11px] font-bold text-[var(--text-muted)] tracking-wider uppercase mb-4">NETWORK OVERVIEW</h2>
