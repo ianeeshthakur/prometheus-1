@@ -6,14 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+
 # Database initialization
 from db import engine, Base
 
 # Import routers
 from routers import streams, cameras, health
-
-# Load environment variables
-load_dotenv()
 
 # Setup logging
 logging.basicConfig(
