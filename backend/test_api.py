@@ -51,6 +51,8 @@ json_data = [
         "name": "Bulk Cam 1",
         "department": "Security",
         "district": "Surat",
+        "location": "North Gate",
+        "vms_vendor": "TestVendor",
         "protocol_type": "HLS",
         "status": "active",
         "latitude": 21.1702,
@@ -61,17 +63,46 @@ json_data = [
         "name": "Bulk Cam 2",
         "department": "Security",
         "district": "Surat",
+        "location": "South Gate",
+        "vms_vendor": "TestVendor",
         "protocol_type": "ONVIF",
         "status": "degraded"
+    },
+    {
+        # Missing ID
+        "name": "Bulk Cam 3",
+        "department": "Security",
+        "district": "Surat",
+        "location": "East Gate",
+        "vms_vendor": "TestVendor",
+        "protocol_type": "ONVIF",
+        "status": "active"
+    },
+    {
+        # Invalid Protocol
+        "id": "CAM-TEST-005",
+        "name": "Bulk Cam 5",
+        "department": "Security",
+        "district": "Surat",
+        "location": "West Gate",
+        "vms_vendor": "TestVendor",
+        "protocol_type": "INVALID_PROTO",
+        "status": "active"
     }
 ]
 resp = requests.post(f"{BASE_URL}/import/json", json=json_data)
 print(resp.status_code, resp.json())
 assert resp.status_code == 200
 assert resp.json()["created"] == 2
+assert resp.json()["failed"] == 2
+assert len(resp.json()["errors"]) == 2
+assert "Missing unique camera identifier" in resp.json()["errors"][0]
+assert "Invalid protocol_type" in resp.json()["errors"][1]
 
 print("5. Testing JSON bulk import duplicate (idempotency)")
-resp = requests.post(f"{BASE_URL}/import/json", json=json_data)
+# Test only the valid ones for idempotency
+json_data_valid = [json_data[0], json_data[1]]
+resp = requests.post(f"{BASE_URL}/import/json", json=json_data_valid)
 print(resp.status_code, resp.json())
 assert resp.status_code == 200
 assert resp.json()["duplicates"] == 2

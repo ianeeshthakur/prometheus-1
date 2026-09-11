@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 from typing import Optional, List
 from enum import Enum
 from datetime import datetime
@@ -48,9 +48,7 @@ class CameraResponse(CameraBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
-        # rtsp_url is intentionally excluded from the response
+    model_config = ConfigDict(from_attributes=True)
 
 class ImportSummaryResponse(BaseModel):
     total_rows: int
