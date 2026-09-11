@@ -1,16 +1,34 @@
 INFO:     Will watch for changes in these directories: ['/Users/ishu/gujarat-police/backend']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [8180] using StatReload
-INFO:     Started server process [8183]
+INFO:     Started reloader process [8701] using StatReload
+INFO:     Started server process [8708]
 INFO:     Waiting for application startup.
-2026-09-11 18:42:24,897 - gvista-backend - INFO - Starting G-VISTA Live Mode Backend
-2026-09-11 18:42:24,901 - gvista-backend - INFO - Database initialized successfully.
-2026-09-11 18:42:24,902 - gvista-backend - INFO - HLS Output Directory: /tmp/gvista-hls
+2026-09-11 19:05:36,407 - gvista-backend - INFO - Starting G-VISTA Live Mode Backend
+2026-09-11 19:05:36,413 - gvista-backend - INFO - Database initialized successfully.
+2026-09-11 19:05:36,413 - gvista-backend - INFO - HLS Output Directory: /tmp/gvista-hls
 INFO:     Application startup complete.
-INFO:     127.0.0.1:51027 - "GET / HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51029 - "GET /api/cameras/ HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51031 - "POST /api/cameras/ HTTP/1.1" 201 Created
-INFO:     127.0.0.1:51033 - "POST /api/cameras/ HTTP/1.1" 409 Conflict
-INFO:     127.0.0.1:51035 - "POST /api/cameras/import/json HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51037 - "POST /api/cameras/import/json HTTP/1.1" 200 OK
-INFO:     127.0.0.1:51039 - "POST /api/cameras/import/csv HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51262 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51264 - "GET /api/cameras/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51266 - "POST /api/cameras/ HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51268 - "POST /api/cameras/ HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:51270 - "POST /api/cameras/import/json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51272 - "POST /api/cameras/import/json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51274 - "POST /api/cameras/import/csv HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51277 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51279 - "POST /api/cameras/ HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51281 - "POST /api/cameras/ HTTP/1.1" 201 Created
+INFO:     127.0.0.1:51283 - "POST /api/cameras/ HTTP/1.1" 201 Created
+2026-09-11 19:05:38,755 - adapters.hls - INFO - [CAM-ADAPTER-HLS] HLSAdapter closed.
+INFO:     127.0.0.1:51285 - "GET /api/cameras/CAM-ADAPTER-HLS/adapter/health HTTP/1.1" 200 OK
+2026-09-11 19:05:38,758 - adapters.onvif - WARNING - [CAM-ADAPTER-ONVIF] ONVIF connect called, but ONVIF is explicitly unsupported in this prototype without authorized testing hardware.
+2026-09-11 19:05:38,758 - adapters.onvif - INFO - [CAM-ADAPTER-ONVIF] ONVIFAdapter closed.
+INFO:     127.0.0.1:51287 - "GET /api/cameras/CAM-ADAPTER-ONVIF/adapter/health HTTP/1.1" 200 OK
+2026-09-11 19:05:38,760 - adapters.vendor - WARNING - [CAM-ADAPTER-VENDOR] Vendor SDK connect called, but VENDOR_SDK is explicitly unsupported in this prototype.
+2026-09-11 19:05:38,760 - adapters.vendor - INFO - [CAM-ADAPTER-VENDOR] VendorSDKAdapter closed.
+INFO:     127.0.0.1:51289 - "GET /api/cameras/CAM-ADAPTER-VENDOR/adapter/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51291 - "GET /api/cameras/CAM-DOES-NOT-EXIST/adapter/health HTTP/1.1" 404 Not Found
+[tcp @ 0xaea09c140] Connection to tcp://192.168.1.100:554?timeout=0 failed: No route to host
+[ WARN:0@2.386] global cap.cpp:214 open VIDEOIO(FFMPEG): backend is generally available but can't be used to capture by name
+2026-09-11 19:05:38,772 - adapters.rtsp - ERROR - [CAM-GJ-SRT-00421] RTSPAdapter failed to open stream.
+2026-09-11 19:05:38,772 - adapters.rtsp - INFO - [CAM-GJ-SRT-00421] RTSPAdapter closed.
+INFO:     127.0.0.1:51293 - "GET /api/cameras/CAM-GJ-SRT-00421/adapter/health HTTP/1.1" 200 OK

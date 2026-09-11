@@ -13,7 +13,7 @@ load_dotenv()
 from db import engine, Base
 
 # Import routers
-from routers import streams, cameras, health
+from routers import streams, cameras, health, adapters
 
 # Setup logging
 logging.basicConfig(
@@ -75,6 +75,7 @@ app.mount("/hls", StaticFiles(directory=hls_dir), name="hls")
 # Include routers
 app.include_router(streams.router, prefix="/api/streams", tags=["streams"])
 app.include_router(cameras.router, prefix="/api/cameras", tags=["cameras"])
+app.include_router(adapters.router, prefix="/api/cameras", tags=["adapters"])
 app.include_router(health.router, prefix="/api/health", tags=["health"])
 
 @app.get("/")
