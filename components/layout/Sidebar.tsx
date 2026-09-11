@@ -2,56 +2,36 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  LayoutDashboard, Camera, AlertTriangle, Brain, Search,
-  Shield, Network, BarChart3, Activity, Settings,
-  Eye
+  LayoutDashboard, Camera, AlertTriangle, Crosshair, Brain, BarChart3,
+  Search, Network, Activity, Shield, Settings
 } from 'lucide-react';
 
-const NAV_GROUPS = [
-  {
-    title: 'COMMAND CENTER',
-    items: [
-      { id: 'command', icon: LayoutDashboard, label: 'Overview', path: '/' },
-      { id: 'cameras', icon: Camera, label: 'Live Cameras', path: '/cameras' },
-      { id: 'alerts', icon: AlertTriangle, label: 'Incidents & Alerts', path: '/alerts' },
-    ]
-  },
-  {
-    title: 'INTELLIGENCE',
-    items: [
-      { id: 'watchlists', icon: Eye, label: 'Watchlists', path: '/watchlists' },
-      { id: 'intelligence', icon: Brain, label: 'Entity Search', path: '/intelligence' },
-      { id: 'analytics', icon: BarChart3, label: 'Analytics', path: '/analytics' },
-    ]
-  },
-  {
-    title: 'INVESTIGATION',
-    items: [
-      { id: 'investigations', icon: Search, label: 'Investigations', path: '/investigations' },
-    ]
-  },
-  {
-    title: 'SYSTEM',
-    items: [
-      { id: 'network', icon: Network, label: 'Camera Network', path: '/network' },
-      { id: 'health', icon: Activity, label: 'System Health', path: '/health' },
-      { id: 'security', icon: Shield, label: 'Audit Logs', path: '/security' },
-      { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' },
-    ]
-  }
+const NAV_ITEMS = [
+  { id: 'command', icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+  { id: 'cameras', icon: Camera, label: 'Live Cameras', path: '/cameras' },
+  { id: 'alerts', icon: AlertTriangle, label: 'Alerts', path: '/alerts' },
+  { id: 'surveillance', icon: Crosshair, label: 'Surveillance', path: '/surveillance' },
+  { id: 'analytics', icon: Brain, label: 'AI Analytics', path: '#' },
+  { id: 'analytics_reports', icon: BarChart3, label: 'Analytics', path: '/analytics' },
+  { id: 'investigations', icon: Search, label: 'Investigations', path: '/investigations' },
+  { id: 'network', icon: Network, label: 'Camera Network', path: '/network' },
+  { id: 'health', icon: Activity, label: 'System Health', path: '/health' },
+  { id: 'security', icon: Shield, label: 'Security', path: '/security' },
+  { id: 'settings', icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
 interface SidebarProps {
   alertCount: number;
+  onAnalyticsClick?: () => void;
 }
 
-export function Sidebar({ alertCount }: SidebarProps) {
+export function Sidebar({ alertCount, onAnalyticsClick }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
   return (
     <aside
-      className="relative h-full flex flex-col w-[190px] shrink-0"
+      className="relative h-full flex flex-col w-[240px] shrink-0"
       style={{
         background: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border)',
@@ -81,47 +61,44 @@ export function Sidebar({ alertCount }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-4 overflow-y-auto overflow-x-hidden px-3">
-        {NAV_GROUPS.map((group, groupIdx) => (
-          <div key={groupIdx} className="mb-6">
-            <div className="px-3 mb-2">
-              <span className="text-[11px] font-bold tracking-[0.08em] text-[var(--text-muted)] uppercase">
-                {group.title}
-              </span>
-            </div>
-            
-            <div className="flex flex-col gap-1.5">
-              {group.items.map((item) => {
-                const isActive = item.path === '/' ? pathname === '/' : pathname.startsWith(item.path);
-                const Icon = item.icon;
-                const isAlerts = item.id === 'alerts';
+      <nav className="flex-1 py-6 overflow-y-auto overflow-x-hidden px-4">
+        <div className="flex flex-col gap-2">
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.path === '/' ? pathname === '/' : (item.path !== '#' && pathname.startsWith(item.path));
+            const Icon = item.icon;
+            const isAlerts = item.id === 'alerts';
 
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => router.push(item.path)}
-                    className={`group w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left transition-all duration-200 ${isActive ? 'bg-[var(--accent-cyan)]/10 text-[var(--text-accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)] hover:text-[var(--text-primary)]'}`}
-                  >
-                    <div className="relative flex-shrink-0">
-                      <Icon size={20} className={isActive ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors'} />
-                      {isAlerts && alertCount > 0 && (
-                        <span
-                          className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full text-white font-bold border border-[var(--bg-secondary)]"
-                          style={{ width: 16, height: 16, fontSize: 9, background: 'var(--status-critical)', lineHeight: 1 }}
-                        >
-                          {alertCount > 9 ? '9+' : alertCount}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[13px] font-medium whitespace-nowrap overflow-hidden">
-                      {item.label}
+            return (
+              <button
+                key={item.id}
+                onClick={(e) => {
+                  if (item.id === 'analytics' && onAnalyticsClick) {
+                    e.preventDefault();
+                    onAnalyticsClick();
+                  } else if (item.path !== '#') {
+                    router.push(item.path);
+                  }
+                }}
+                className={`group w-full flex items-center gap-3.5 px-4 py-3.5 rounded-xl text-left transition-all duration-200 ${isActive ? 'bg-[var(--accent-cyan)]/10 text-[var(--text-accent)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-input)] hover:text-[var(--text-primary)]'}`}
+              >
+                <div className="relative flex-shrink-0">
+                  <Icon size={20} className={isActive ? 'text-[var(--accent-cyan)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-primary)] transition-colors'} />
+                  {isAlerts && alertCount > 0 && (
+                    <span
+                      className="absolute -top-1.5 -right-1.5 flex items-center justify-center rounded-full text-white font-bold border border-[var(--bg-secondary)]"
+                      style={{ width: 16, height: 16, fontSize: 9, background: 'var(--status-critical)', lineHeight: 1 }}
+                    >
+                      {alertCount > 9 ? '9+' : alertCount}
                     </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+                  )}
+                </div>
+                <span className="text-[13px] font-bold whitespace-nowrap overflow-hidden">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </nav>
       
       <div className="p-4 border-t border-[var(--border)]">

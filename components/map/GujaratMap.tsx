@@ -103,24 +103,30 @@ export function GujaratMap({
 
         const marker = L.marker([cluster.lat, cluster.lng], { icon })
           .bindPopup(`
-            <div style="font-family:Inter,sans-serif; min-width: 150px; padding: 2px;">
-              <div style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.05em">
-                ${cluster.district} Cluster
+            <div style="font-family:Inter,sans-serif; min-width: 160px; padding: 4px;">
+              <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:0.05em">
+                ${cluster.district} CLUSTER
               </div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:11px;color:#64748b;font-weight:500">Total Cameras</span>
-                <span style="font-size:11px;font-weight:700;color:#0f172a">${cluster.total.toLocaleString()}</span>
+              <div style="font-size:12px;font-weight:700;color:#0f172a;margin-bottom:4px">
+                ${(cluster.total > 1000 ? (cluster.total/1000).toFixed(1) + 'K' : cluster.total)} Cameras
               </div>
-              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                <span style="font-size:11px;color:#64748b;font-weight:500">Status</span>
-                <span style="font-size:11px;font-weight:700;color:#10b981">99% Online</span>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#10b981"></div>
+                <span style="font-size:11px;color:#64748b"><strong style="color:#10b981">${(cluster.total * 0.99).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</strong> Online</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#ef4444"></div>
+                <span style="font-size:11px;color:#64748b"><strong style="color:#ef4444">${(cluster.total * 0.01).toFixed(0)}</strong> Offline</span>
               </div>
               ${hasAlert ? `
-              <div style="display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid #fee2e2">
-                <span style="font-size:11px;font-weight:800;color:#ef4444;letter-spacing:0.02em">CRITICAL ALERTS</span>
-                <span style="font-size:11px;font-weight:800;color:#ef4444;background:#fef2f2;padding:2px 6px;border-radius:10px border:1px solid #fecaca">2 ACTIVE</span>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                <div style="width:6px;height:6px;border-radius:50%;background:#f59e0b"></div>
+                <span style="font-size:11px;color:#64748b"><strong style="color:#f59e0b">3</strong> Active Alerts</span>
               </div>
-              ` : ''}
+              ` : '<div style="margin-bottom:8px"></div>'}
+              <button onclick="window.dispatchEvent(new CustomEvent('cluster-select', {detail: '${cluster.district}'}))" style="width:100%;padding:8px;background:#0ea5e9;color:white;border:none;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;transition:all 0.2s" onmouseover="this.style.background='#0284c7'" onmouseout="this.style.background='#0ea5e9'">
+                View Cluster
+              </button>
             </div>
           `);
         

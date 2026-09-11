@@ -9,7 +9,6 @@ import { Zap } from 'lucide-react';
 
 import { KeyMetricsRow } from '@/components/dashboard/KeyMetricsRow';
 import { IntelligenceDrawer } from '@/components/dashboard/IntelligenceDrawer';
-import { LeftOperationalPanel } from '@/components/dashboard/LeftOperationalPanel';
 import { CameraDetailsPanel } from '@/components/dashboard/CameraDetailsPanel';
 
 const GujaratMap = dynamic(() => import('@/components/map/GujaratMap').then(m => ({ default: m.GujaratMap })), { ssr: false });
@@ -124,7 +123,6 @@ export default function CommandCenterPage() {
       <KeyMetricsRow />
       
       <div className="flex flex-1 min-h-0 relative">
-        <LeftOperationalPanel onClusterClick={handleClusterClick} />
         <div className="flex-1 relative min-w-0">
           <GujaratMap
             demoPhase={demoState.phase}
@@ -138,7 +136,7 @@ export default function CommandCenterPage() {
           <DemoProcessLog logs={demoState.processLog} phase={demoState.phase} />
         </div>
         
-        <div className="relative w-[320px] flex-shrink-0 flex flex-col h-full bg-[var(--bg-panel)] overflow-hidden">
+        <div className="relative w-[400px] flex-shrink-0 flex flex-col h-full bg-[var(--bg-panel)] overflow-hidden">
           <IntelligenceDrawer 
             onAlertClick={handleAlertClick}
             onTrace={handleTrace}

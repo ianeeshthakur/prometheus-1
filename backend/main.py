@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
+# Database initialization
+from db import engine, Base
+
 # Import routers
 from routers import streams, cameras, health
 
@@ -24,6 +27,15 @@ logger = logging.getLogger("gvista-backend")
 async def lifespan(app: FastAPI):
     # Startup logic
     logger.info("Starting G-VISTA Live Mode Backend")
+    
+    # Initialize DB (creates SQLite db file and tables if not exist)
+    try:
+        import models # ensure models are registered
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+
     # Make sure HLS output directory exists
     hls_dir = os.environ.get("HLS_OUTPUT_DIR", "/tmp/gvista-hls")
     os.makedirs(hls_dir, exist_ok=True)
